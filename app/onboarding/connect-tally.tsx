@@ -11,16 +11,9 @@ import {
 } from "react-native";
 import { ArrowRight, Check, Download, Monitor, Smartphone } from "lucide-react-native";
 import { Nav } from "@/components/nav";
+import { ProgressDots, makeSteps } from "@/components/progress-dots";
 
 type Mode = "desktop" | "mobile";
-
-type Step = { label: string; status: "done" | "active" | "pending" };
-const PROGRESS: Step[] = [
-  { label: "Sign up", status: "done" },
-  { label: "Tell us about you", status: "done" },
-  { label: "Connect Tally", status: "active" },
-  { label: "See your numbers", status: "pending" },
-];
 
 const TRUST = ["Read-only", "AES-256 encrypted", "Indian servers", "SOC 2 Type II"];
 
@@ -30,7 +23,7 @@ export default function ConnectTally() {
   const [waSent, setWaSent] = useState(false);
   const { width } = useWindowDimensions();
   const compact = width < 640;
-  const activeIdx = PROGRESS.findIndex((p) => p.status === "active");
+  const steps = makeSteps("Connect Tally", ["Tell us about you", "Sign up"]);
 
   return (
     <View className="flex-1 bg-surface">
@@ -50,48 +43,7 @@ export default function ConnectTally() {
       >
         <ScrollView contentContainerClassName="pb-20" keyboardShouldPersistTaps="handled">
           <View className="w-full self-center px-5" style={{ maxWidth: 720, paddingTop: compact ? 24 : 56 }}>
-            {compact ? (
-              <View className="mb-6">
-                <Text className="text-xs font-semibold uppercase text-ink-tertiary mb-2" style={{ letterSpacing: 1.5 }}>
-                  Step {activeIdx + 1} of {PROGRESS.length}
-                </Text>
-                <View className="flex-row gap-1.5">
-                  {PROGRESS.map((p, i) => (
-                    <View
-                      key={p.label}
-                      className={`h-1 flex-1 rounded-full ${
-                        i <= activeIdx ? "bg-brand" : "bg-slate-200"
-                      }`}
-                    />
-                  ))}
-                </View>
-                <Text className="text-sm font-medium text-ink mt-2">{PROGRESS[activeIdx].label}</Text>
-              </View>
-            ) : (
-              <View className="flex-row items-center gap-1.5 mb-8 flex-wrap">
-                {PROGRESS.map((p, i) => (
-                  <View key={p.label} className="flex-row items-center gap-1.5">
-                    <View
-                      className={`w-2 h-2 rounded-full ${
-                        p.status === "pending" ? "bg-slate-300" : "bg-brand"
-                      }`}
-                    />
-                    <Text
-                      className={`text-xs font-medium ${
-                        p.status === "active"
-                          ? "text-ink"
-                          : p.status === "done"
-                          ? "text-slate-600"
-                          : "text-slate-400"
-                      }`}
-                    >
-                      {p.label}
-                    </Text>
-                    {i < PROGRESS.length - 1 && <View className="w-7 h-px bg-slate-200 mx-1" />}
-                  </View>
-                ))}
-              </View>
-            )}
+            <ProgressDots steps={steps} />
 
             <Text
               className="font-semibold text-ink mb-3"
@@ -250,7 +202,7 @@ function DesktopPane() {
       <View className="bg-slate-50 rounded-xl px-5 py-4">
         <Text className="text-sm font-semibold text-ink mb-1">Tally not on this machine?</Text>
         <Text className="text-sm text-slate-600" style={{ lineHeight: 21 }}>
-          Switch to "I'm on my phone" above and we'll send the install link to whoever runs Tally for you — by WhatsApp or email.
+          Switch to "I'm on my phone" above and we'll email the install link to whoever runs Tally for you.
         </Text>
       </View>
     </View>
@@ -271,18 +223,20 @@ function MobilePane({
   return (
     <View className="gap-5">
       <View className="bg-surface border border-slate-200 rounded-2xl px-5">
-        <Row num={1} title="Send the install link to your laptop">
+        <Row num={1} title="Email the install link to your laptop">
           <Text className="text-sm text-slate-600" style={{ lineHeight: 22 }}>
-            We'll WhatsApp the Riko Connector download to whoever runs Tally — you, your accountant, or your CA. Takes them 5 minutes.
+            We'll email the Riko Connector download to whoever runs Tally — you, your accountant, or your CA. Takes them 5 minutes.
           </Text>
           <View className="flex-row gap-2 mt-3 items-center">
             <TextInput
               value={waNum}
               onChangeText={setWaNum}
-              placeholder="+91 98765 43210"
+              placeholder="accountant@patel-textiles.in"
               placeholderTextColor="#94A3B8"
               className="flex-1 px-4 border border-slate-300 rounded-lg bg-surface text-sm text-ink"
-              keyboardType="phone-pad"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
               style={{ fontFamily: "Inter_400Regular", height: 44 }}
             />
             <Pressable
@@ -297,17 +251,23 @@ function MobilePane({
               <Text className="text-sm font-semibold text-white">{waSent ? "Sent" : "Send link"}</Text>
             </Pressable>
           </View>
-          <View className="mt-3 bg-whatsapp rounded-xl px-4 py-3" style={{ maxWidth: 340 }}>
-            <Text className="text-xs text-white font-semibold mb-1" style={{ opacity: 0.85 }}>
-              Riko · WhatsApp Business
+          <View
+            className="mt-3 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
+            style={{ maxWidth: 360 }}
+          >
+            <Text className="text-[11px] font-semibold uppercase text-ink-tertiary mb-1" style={{ letterSpacing: 1.2 }}>
+              From: harsh@rikoai.in
             </Text>
-            <Text className="text-sm text-white" style={{ lineHeight: 20 }}>
-              Hi! Harsh from Patel Textiles invited you to set up Riko. Download the Riko Connector for Windows here:{" "}
-              <Text className="underline text-white">riko.in/c/7h2k</Text>
+            <Text className="text-sm font-semibold text-ink mb-1">
+              Set up Riko for Patel Textiles
+            </Text>
+            <Text className="text-sm text-slate-600" style={{ lineHeight: 20 }}>
+              Harsh invited you to connect Tally. Download the Connector for Windows:{" "}
+              <Text className="underline text-ink-tertiary font-medium">riko.in/c/7h2k</Text>
             </Text>
           </View>
         </Row>
-        <Row num={2} title="We'll WhatsApp you when the sync starts" last>
+        <Row num={2} title="We'll email you when the sync starts" last>
           <Text className="text-sm text-slate-600" style={{ lineHeight: 22 }}>
             As soon as they install and pair, your books appear in Riko. Usually within an hour of you sending the link.
           </Text>

@@ -36,7 +36,7 @@ export function Nav({ rightSlot }: NavProps) {
             </>
           )}
           <Pressable
-            onPress={() => router.push("/onboarding/connect-tally")}
+            onPress={() => router.push("/onboarding/role")}
             className="py-2.5 px-5 rounded-full bg-ink"
           >
             <Text className="text-sm font-semibold text-white">Get started free</Text>

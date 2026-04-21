@@ -47,7 +47,7 @@ export default function Landing() {
               </Text>
               <View className="flex-row gap-3 mt-2 flex-wrap">
                 <Pressable
-                  onPress={() => router.push("/onboarding/connect-tally")}
+                  onPress={() => router.push("/onboarding/role")}
                   className="flex-row items-center gap-2 bg-ink rounded-full"
                   style={{ paddingHorizontal: 24, paddingVertical: 14 }}
                 >

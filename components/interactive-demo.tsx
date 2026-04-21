@@ -160,7 +160,7 @@ export function InteractiveDemo() {
                     I'd answer this from your real Tally data once connected. For the demo, try one of the sample questions below — or sign up to ask this against your own books.
                   </Text>
                   <Pressable
-                    onPress={() => router.push("/onboarding/connect-tally")}
+                    onPress={() => router.push("/onboarding/role")}
                     className="self-start mt-3 flex-row items-center gap-1.5 bg-ink px-4 py-2.5 rounded-full"
                   >
                     <Text className="text-xs font-semibold text-white">Connect my Tally</Text>
