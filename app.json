@@ -37,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9ec27d7a-a0ef-4544-9877-772ba3e498d9"
+      }
+    },
+    "owner": "bhaskaraprapap",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9ec27d7a-a0ef-4544-9877-772ba3e498d9"
     }
   }
 }
