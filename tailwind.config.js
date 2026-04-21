@@ -1,3 +1,5 @@
+const colors = require("tailwindcss/colors");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}"],
@@ -5,36 +7,31 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        green: {
-          DEFAULT: "#1D9E75",
-          dark: "#0F6E56",
-          darkest: "#04342C",
-          light: "#E1F5EE",
+        brand: {
+          DEFAULT: "#22C55E",
+          hover: "#16A34A",
+          deep: "#065F46",
+          tint: "#E8F5EC",
         },
-        amber: {
-          DEFAULT: "#BA7517",
-          light: "#FAEEDA",
-          dark: "#633806",
-        },
-        whatsapp: "#25D366",
         ink: {
-          DEFAULT: "#1a1a1a",
-          secondary: "#5f5e5a",
-          tertiary: "#888780",
-        },
-        border: {
-          DEFAULT: "rgba(0,0,0,0.12)",
-          strong: "rgba(0,0,0,0.22)",
+          DEFAULT: "#0B1F12",
+          secondary: "#0F172A",
+          tertiary: "#166534",
         },
         surface: {
-          DEFAULT: "#ffffff",
-          alt: "#f1efe8",
-          bg: "#fafaf7",
+          DEFAULT: "#FFFFFF",
+          tint: "#F8FAF9",
         },
+        slate: colors.slate,
+        amber: colors.amber,
+        red: colors.red,
+        whatsapp: "#25D366",
       },
       fontFamily: {
-        sans: ["System"],
-        mono: ["Menlo", "monospace"],
+        sans: ["Inter_400Regular", "System"],
+        medium: ["Inter_500Medium"],
+        semibold: ["Inter_600SemiBold"],
+        bold: ["Inter_700Bold"],
       },
     },
   },

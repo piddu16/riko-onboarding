@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
+import { ArrowRight, Send } from "lucide-react-native";
 import { ANSWERS, SUGGESTED, matchKey, type Answer, type AnswerKey } from "@/lib/answers";
 
 type Msg =
@@ -68,18 +69,29 @@ export function InteractiveDemo() {
   }
 
   return (
-    <View className="bg-surface border border-border rounded-2xl p-4 min-h-[460px] flex-1">
-      <View className="flex-row items-center justify-between pb-3 border-b border-border mb-3">
+    <View
+      className="bg-surface border border-slate-200 rounded-2xl p-4 flex-1"
+      style={{
+        minHeight: 520,
+        shadowColor: "#10B981",
+        shadowOffset: { width: 0, height: 30 },
+        shadowOpacity: 0.18,
+        shadowRadius: 40,
+        elevation: 8,
+      }}
+    >
+      <View className="flex-row items-center justify-between pb-3 border-b border-slate-100 mb-3">
         <View className="flex-row items-center gap-2">
-          <View className="w-2 h-2 rounded-full bg-green" />
-          <Text className="text-[13px] font-medium text-ink">Riko · Patel Textiles (sample)</Text>
+          <View className="w-2 h-2 rounded-full bg-brand" />
+          <Text className="text-sm font-semibold text-ink">Riko · Patel Textiles (sample)</Text>
         </View>
-        <Text className="text-[11px] text-ink-tertiary">Synced 2 min ago</Text>
+        <Text className="text-xs text-slate-500">Synced 2 min ago</Text>
       </View>
 
       <ScrollView
         ref={scrollRef}
-        className="flex-1 max-h-[380px]"
+        className="flex-1"
+        style={{ maxHeight: 380 }}
         contentContainerClassName="gap-3"
         showsVerticalScrollIndicator={false}
       >
@@ -88,21 +100,22 @@ export function InteractiveDemo() {
             return (
               <View
                 key={m.id}
-                className="self-end bg-surface-alt px-3.5 py-2.5 rounded-2xl rounded-br-sm max-w-[75%]"
+                className="self-end bg-brand px-4 py-2.5 rounded-2xl rounded-br-sm"
+                style={{ maxWidth: "78%" }}
               >
-                <Text className="text-sm text-ink">{m.text}</Text>
+                <Text className="text-sm text-white font-medium">{m.text}</Text>
               </View>
             );
           }
           if (m.kind === "typing") {
             return (
-              <View key={m.id} className="self-start max-w-[92%]">
-                <Text className="text-[11px] text-ink-tertiary mb-1.5 pl-1">Riko</Text>
-                <View className="bg-green-light px-3.5 py-3 rounded-2xl rounded-tl-sm">
+              <View key={m.id} className="self-start" style={{ maxWidth: "92%" }}>
+                <Text className="text-[11px] text-slate-500 mb-1 pl-1 font-medium">Riko</Text>
+                <View className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-sm">
                   <View className="flex-row gap-1 items-center">
-                    <View className="w-1.5 h-1.5 rounded-full bg-green opacity-40" />
-                    <View className="w-1.5 h-1.5 rounded-full bg-green opacity-70" />
-                    <View className="w-1.5 h-1.5 rounded-full bg-green" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    <View className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                   </View>
                 </View>
               </View>
@@ -110,40 +123,43 @@ export function InteractiveDemo() {
           }
           if (m.kind === "ai") {
             return (
-              <View key={m.id} className="self-start max-w-[92%]">
-                <Text className="text-[11px] text-ink-tertiary mb-1.5 pl-1">Riko · from your Tally</Text>
-                <View className="bg-green-light px-3.5 py-3 rounded-2xl rounded-tl-sm">
-                  <Text className="text-sm text-green-darkest leading-5">{m.answer.lead}</Text>
-                  <View className="mt-2.5">
+              <View key={m.id} className="self-start" style={{ maxWidth: "92%" }}>
+                <Text className="text-[11px] text-slate-500 mb-1 pl-1 font-medium">Riko · from your Tally</Text>
+                <View className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-sm">
+                  <Text className="text-sm text-ink" style={{ lineHeight: 20 }}>{m.answer.lead}</Text>
+                  <View className="mt-3">
                     {m.answer.rows.map((r, i) => (
                       <View
                         key={i}
-                        className={`flex-row justify-between py-1.5 ${
-                          i < m.answer.rows.length - 1 ? "border-b border-green/10" : ""
+                        className={`flex-row justify-between py-2 ${
+                          i < m.answer.rows.length - 1 ? "border-b border-slate-200" : ""
                         }`}
                       >
-                        <Text className="text-[13px] text-green-darkest">{r.label}</Text>
-                        <Text className="text-[13px] font-medium text-green-darkest">{r.value}</Text>
+                        <Text className="text-[13px] text-slate-700">{r.label}</Text>
+                        <Text className="text-[13px] font-semibold text-ink" style={{ fontVariant: ["tabular-nums"] }}>
+                          {r.value}
+                        </Text>
                       </View>
                     ))}
                   </View>
-                  <Text className="mt-2.5 text-[13px] text-green-dark">{m.answer.followup}</Text>
+                  <Text className="mt-3 text-[13px] font-medium text-ink-tertiary">{m.answer.followup}</Text>
                 </View>
               </View>
             );
           }
           return (
-            <View key={m.id} className="self-start max-w-[92%]">
-              <Text className="text-[11px] text-ink-tertiary mb-1.5 pl-1">Riko</Text>
-              <View className="bg-green-light px-3.5 py-3 rounded-2xl rounded-tl-sm">
-                <Text className="text-sm text-green-darkest leading-5">
+            <View key={m.id} className="self-start" style={{ maxWidth: "92%" }}>
+              <Text className="text-[11px] text-slate-500 mb-1 pl-1 font-medium">Riko</Text>
+              <View className="bg-slate-100 px-4 py-3 rounded-2xl rounded-bl-sm">
+                <Text className="text-sm text-ink" style={{ lineHeight: 20 }}>
                   I'd answer this from your real Tally data once connected. For the demo, try one of the sample questions below — or sign up to ask this against your own books.
                 </Text>
                 <Pressable
                   onPress={() => router.push("/onboarding/connect-tally")}
-                  className="self-start mt-2.5 bg-green-dark px-3.5 py-2 rounded-md"
+                  className="self-start mt-3 flex-row items-center gap-1.5 bg-ink px-4 py-2 rounded-full"
                 >
-                  <Text className="text-xs font-medium text-white">Connect my Tally →</Text>
+                  <Text className="text-xs font-semibold text-white">Connect my Tally</Text>
+                  <ArrowRight size={12} color="#ffffff" strokeWidth={2.5} />
                 </Pressable>
               </View>
             </View>
@@ -156,25 +172,27 @@ export function InteractiveDemo() {
           <Pressable
             key={s.key}
             onPress={() => askKey(s.key)}
-            className="border border-border rounded-full px-3 py-1.5 active:bg-surface-alt"
+            className="border border-slate-300 rounded-full px-3 py-1.5 bg-surface"
           >
-            <Text className="text-xs text-ink-secondary">{s.label}</Text>
+            <Text className="text-xs text-slate-600 font-medium">{s.label}</Text>
           </Pressable>
         ))}
       </View>
 
-      <View className="flex-row gap-2 mt-3 pt-3 border-t border-border">
+      <View className="flex-row gap-2 mt-3 pt-3 border-t border-slate-100">
         <TextInput
           value={input}
           onChangeText={setInput}
-          placeholder="Ask in English or Hindi..."
-          placeholderTextColor="#888780"
-          className="flex-1 h-[38px] px-3 border border-border rounded-lg bg-surface text-sm text-ink"
+          placeholder="Ask Riko about your books…"
+          placeholderTextColor="#94A3B8"
+          className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg bg-surface text-sm text-ink"
           onSubmitEditing={submit}
           returnKeyType="send"
+          style={{ fontFamily: "Inter_400Regular" }}
         />
-        <Pressable onPress={submit} className="h-[38px] px-4 bg-green rounded-lg justify-center">
-          <Text className="text-[13px] font-medium text-white">Ask</Text>
+        <Pressable onPress={submit} className="flex-row items-center gap-1.5 px-4 bg-brand rounded-lg justify-center">
+          <Text className="text-sm font-semibold text-white">Ask</Text>
+          <Send size={14} color="#ffffff" strokeWidth={2.25} />
         </Pressable>
       </View>
     </View>

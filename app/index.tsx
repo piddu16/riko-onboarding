@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
+import { ArrowRight, CheckCircle } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { InteractiveDemo } from "@/components/interactive-demo";
 
@@ -10,50 +11,61 @@ export default function Landing() {
   const twoCol = width >= 880;
 
   return (
-    <View className="flex-1 bg-surface-bg">
+    <View className="flex-1 bg-surface">
       <Nav />
       <ScrollView contentContainerClassName="pb-16">
         <View
           className="w-full self-center"
-          style={{ maxWidth: 1200, paddingHorizontal: twoCol ? 32 : 16, paddingTop: twoCol ? 64 : 32, paddingBottom: twoCol ? 96 : 48 }}
+          style={{
+            maxWidth: 1200,
+            paddingHorizontal: twoCol ? 32 : 24,
+            paddingTop: twoCol ? 112 : 48,
+            paddingBottom: twoCol ? 96 : 48,
+          }}
         >
-          <View className={twoCol ? "flex-row gap-12 items-center" : "gap-8"}>
-            <View className="flex-1 gap-4">
-              <View className="self-start flex-row items-center gap-2 bg-green-light px-3 py-1.5 rounded-full">
-                <View className="w-1.5 h-1.5 rounded-full bg-green" />
-                <Text className="text-xs font-medium text-green-darkest">Live demo · sample data</Text>
+          <View className={twoCol ? "flex-row gap-12 items-center" : "gap-10"}>
+            <View className="flex-1 gap-5">
+              <View className="self-start flex-row items-center gap-2 bg-brand-tint px-3 py-1.5 rounded-full">
+                <View className="w-1.5 h-1.5 rounded-full bg-brand" />
+                <Text className="font-semibold text-xs uppercase text-ink-tertiary" style={{ letterSpacing: 2 }}>
+                  Live demo · sample data
+                </Text>
               </View>
               <Text
-                className="font-medium text-ink"
-                style={{ fontSize: twoCol ? 48 : 36, lineHeight: twoCol ? 53 : 40, letterSpacing: -0.5 }}
+                className="font-semibold text-ink"
+                style={{ fontSize: twoCol ? 64 : 44, lineHeight: twoCol ? 70 : 48, letterSpacing: -1 }}
               >
                 Your books, but they talk back.
               </Text>
-              <Text className="text-ink-secondary" style={{ fontSize: 17, lineHeight: 26, maxWidth: 480 }}>
+              <Text className="text-slate-600" style={{ fontSize: 18, lineHeight: 28, maxWidth: 520 }}>
                 Ask anything about a Tally-connected business — receivables, GST, cash, margins. Riko answers in seconds, in plain English. Try it on the right before you sign up.
               </Text>
               <View className="flex-row gap-3 mt-2 flex-wrap">
                 <Pressable
                   onPress={() => router.push("/onboarding/connect-tally")}
-                  className="bg-green rounded-lg"
-                  style={{ paddingHorizontal: 22, paddingVertical: 12 }}
+                  className="flex-row items-center gap-2 bg-ink rounded-full"
+                  style={{ paddingHorizontal: 24, paddingVertical: 14 }}
                 >
-                  <Text className="text-sm font-medium text-white">Get my numbers →</Text>
+                  <Text className="text-sm font-semibold text-white">Get started free</Text>
+                  <ArrowRight size={16} color="#ffffff" strokeWidth={2.25} />
                 </Pressable>
-                <Pressable className="border border-border rounded-lg" style={{ paddingHorizontal: 18, paddingVertical: 12 }}>
-                  <Text className="text-sm text-ink-secondary">How it works</Text>
+                <Pressable
+                  className="border border-slate-300 rounded-full bg-surface"
+                  style={{ paddingHorizontal: 24, paddingVertical: 14 }}
+                >
+                  <Text className="text-sm font-medium text-slate-700">How it works</Text>
                 </Pressable>
               </View>
-              <View className="flex-row flex-wrap gap-x-5 gap-y-2 mt-3">
+              <View className="flex-row flex-wrap gap-x-5 gap-y-2 mt-2">
                 {TRUST.map((t) => (
                   <View key={t} className="flex-row items-center gap-1.5">
-                    <Text className="text-xs text-green font-medium">✓</Text>
-                    <Text className="text-xs text-ink-tertiary">{t}</Text>
+                    <CheckCircle size={14} color="#22C55E" strokeWidth={2.25} />
+                    <Text className="text-xs text-slate-500">{t}</Text>
                   </View>
                 ))}
               </View>
             </View>
-            <View style={{ flex: twoCol ? 1.1 : undefined, width: twoCol ? undefined : "100%" }}>
+            <View style={{ flex: twoCol ? 1.05 : undefined, width: twoCol ? undefined : "100%" }}>
               <InteractiveDemo />
             </View>
           </View>
