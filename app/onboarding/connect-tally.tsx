@@ -19,8 +19,8 @@ const TRUST = ["Read-only", "AES-256 encrypted", "Indian servers", "SOC 2 Type I
 
 export default function ConnectTally() {
   const [mode, setMode] = useState<Mode>("desktop");
-  const [waNum, setWaNum] = useState("+91 ");
-  const [waSent, setWaSent] = useState(false);
+  const [email, setEmail] = useState("");
+  const [sent, setSent] = useState(false);
   const { width } = useWindowDimensions();
   const compact = width < 640;
   const steps = makeSteps("Connect Tally", ["Tell us about you", "Sign up"]);
@@ -110,10 +110,10 @@ export default function ConnectTally() {
               <DesktopPane />
             ) : (
               <MobilePane
-                waNum={waNum}
-                setWaNum={setWaNum}
-                waSent={waSent}
-                onSend={() => setWaSent(true)}
+                email={email}
+                setEmail={setEmail}
+                sent={sent}
+                onSend={() => setSent(true)}
               />
             )}
 
@@ -210,14 +210,14 @@ function DesktopPane() {
 }
 
 function MobilePane({
-  waNum,
-  setWaNum,
-  waSent,
+  email,
+  setEmail,
+  sent,
   onSend,
 }: {
-  waNum: string;
-  setWaNum: (v: string) => void;
-  waSent: boolean;
+  email: string;
+  setEmail: (v: string) => void;
+  sent: boolean;
   onSend: () => void;
 }) {
   return (
@@ -229,8 +229,8 @@ function MobilePane({
           </Text>
           <View className="flex-row gap-2 mt-3 items-center">
             <TextInput
-              value={waNum}
-              onChangeText={setWaNum}
+              value={email}
+              onChangeText={setEmail}
               placeholder="accountant@patel-textiles.in"
               placeholderTextColor="#94A3B8"
               className="flex-1 px-4 border border-slate-300 rounded-lg bg-surface text-sm text-ink"
@@ -241,14 +241,14 @@ function MobilePane({
             />
             <Pressable
               onPress={onSend}
-              disabled={waSent}
+              disabled={sent}
               className={`flex-row items-center gap-1.5 px-5 justify-center rounded-full ${
-                waSent ? "bg-brand-hover" : "bg-brand"
+                sent ? "bg-brand-hover" : "bg-brand"
               }`}
               style={{ height: 44 }}
             >
-              {waSent && <Check size={14} color="#ffffff" strokeWidth={2.5} />}
-              <Text className="text-sm font-semibold text-white">{waSent ? "Sent" : "Send link"}</Text>
+              {sent && <Check size={14} color="#ffffff" strokeWidth={2.5} />}
+              <Text className="text-sm font-semibold text-white">{sent ? "Sent" : "Send link"}</Text>
             </Pressable>
           </View>
           <View
