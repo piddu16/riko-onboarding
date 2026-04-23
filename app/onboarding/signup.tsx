@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import { ArrowRight, Mail, ShieldCheck } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { ProgressDots, makeSteps } from "@/components/progress-dots";
+import { useOnboarding } from "@/lib/onboarding-store";
 
 const LOGOS = ["ICAI", "NASSCOM", "MSME", "Tally Certified"];
 
@@ -21,7 +22,8 @@ function isValidEmail(s: string) {
 }
 
 export default function SignupScreen() {
-  const [email, setEmail] = useState("");
+  const { state, update } = useOnboarding();
+  const [email, setEmail] = useState(state.email ?? "");
   const [sent, setSent] = useState(false);
   const { width } = useWindowDimensions();
   const compact = width < 640;
@@ -31,6 +33,7 @@ export default function SignupScreen() {
 
   function send() {
     if (!valid) return;
+    update({ email: email.trim() });
     setSent(true);
     setTimeout(() => router.push("/onboarding/connect-tally"), 900);
   }

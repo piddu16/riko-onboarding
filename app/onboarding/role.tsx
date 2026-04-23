@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { router } from "expo-router";
 import { ArrowRight, Briefcase, Calculator, FileSpreadsheet } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { ProgressDots, makeSteps } from "@/components/progress-dots";
-
-type Role = "founder" | "accountant" | "ca";
+import { useOnboarding, type Role } from "@/lib/onboarding-store";
 
 const ROLES: Array<{
   key: Role;
@@ -34,17 +32,16 @@ const ROLES: Array<{
 ];
 
 export default function RoleScreen() {
-  const [selected, setSelected] = useState<Role | null>(null);
+  const { state, update } = useOnboarding();
   const { width } = useWindowDimensions();
   const compact = width < 640;
 
   const steps = makeSteps("Tell us about you");
+  const selected = state.role;
 
   function onContinue() {
     if (!selected) return;
-    if (selected === "founder") router.push("/onboarding/intents");
-    else if (selected === "accountant") router.push("/onboarding/intents");
-    else router.push("/onboarding/intents");
+    router.push("/onboarding/intents");
   }
 
   return (
@@ -70,7 +67,7 @@ export default function RoleScreen() {
               return (
                 <Pressable
                   key={key}
-                  onPress={() => setSelected(key)}
+                  onPress={() => update({ role: key })}
                   className={`flex-row items-start gap-4 rounded-2xl p-5 border ${
                     active ? "border-brand bg-brand-tint" : "border-slate-200 bg-surface"
                   }`}

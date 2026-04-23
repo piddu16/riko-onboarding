@@ -1,32 +1,25 @@
-import { useState } from "react";
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { router } from "expo-router";
 import { ArrowRight, Check } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { ProgressDots, makeSteps } from "@/components/progress-dots";
+import { useOnboarding, type Intent } from "@/lib/onboarding-store";
+import { INTENT_LABEL } from "@/lib/onboarding-content";
 
-const INTENTS = [
-  { key: "receivables", label: "Money stuck in receivables" },
-  { key: "cash", label: "No real-time view of cash and bank" },
-  { key: "gst", label: "GST filing stress every month" },
-  { key: "mis", label: "Slow or messy MIS for investors / lenders" },
-  { key: "margin", label: "Inventory bleeding margin" },
-  { key: "payables", label: "Vendor payments and payables visibility" },
-] as const;
+const INTENT_KEYS: Intent[] = ["receivables", "cash", "gst", "mis", "margin", "payables"];
 
 export default function IntentsScreen() {
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const { state, update } = useOnboarding();
   const { width } = useWindowDimensions();
   const compact = width < 640;
 
   const steps = makeSteps("Tell us about you");
-  const canContinue = selected.size >= 1;
+  const canContinue = state.intents.length >= 1;
 
-  function toggle(key: string) {
-    const next = new Set(selected);
-    if (next.has(key)) next.delete(key);
-    else next.add(key);
-    setSelected(next);
+  function toggle(key: Intent) {
+    const has = state.intents.includes(key);
+    const next = has ? state.intents.filter((i) => i !== key) : [...state.intents, key];
+    update({ intents: next });
   }
 
   return (
@@ -47,8 +40,8 @@ export default function IntentsScreen() {
           </Text>
 
           <View className="gap-2.5">
-            {INTENTS.map(({ key, label }) => {
-              const active = selected.has(key);
+            {INTENT_KEYS.map((key) => {
+              const active = state.intents.includes(key);
               return (
                 <Pressable
                   key={key}
@@ -64,14 +57,14 @@ export default function IntentsScreen() {
                   >
                     {active && <Check size={14} color="#ffffff" strokeWidth={3} />}
                   </View>
-                  <Text className="flex-1 text-base font-medium text-ink">{label}</Text>
+                  <Text className="flex-1 text-base font-medium text-ink">{INTENT_LABEL[key]}</Text>
                 </Pressable>
               );
             })}
           </View>
 
           <Text className="text-xs text-slate-500 mt-4">
-            {selected.size} of {INTENTS.length} selected · at least 1 required
+            {state.intents.length} of {INTENT_KEYS.length} selected · at least 1 required
           </Text>
 
           <View className="mt-8 items-start">

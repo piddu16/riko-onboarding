@@ -1,17 +1,46 @@
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { ArrowRight } from "lucide-react-native";
 import { Nav } from "@/components/nav";
-import { ANSWERS } from "@/lib/answers";
+import { ANSWERS, type AnswerKey } from "@/lib/answers";
+import { useOnboarding, nameFromEmail } from "@/lib/onboarding-store";
 
-const FIRST_THREE: Array<keyof typeof ANSWERS> = ["overdue", "cash", "gst"];
+const FALLBACK_KEYS: AnswerKey[] = ["overdue", "cash", "gst"];
 
 const FOUNDER_NOTE =
-  "Hi, I'm Harsh. I co-founded Riko because I was tired of asking my CA \u201Cwhat's my cash\u201D three times a week. This is the moment we built it for. Reply here if anything looks wrong — I read every one.";
+  "Hi, I'm Harsh. I co-founded Riko because I was tired of asking my CA “what's my cash” three times a week. This is the moment we built it for. Reply here if anything looks wrong — I read every one.";
+
+// Map the 6 onboarding intents to the 4 landing-demo answer keys we actually have preseeded.
+const INTENT_TO_ANSWER: Record<string, AnswerKey> = {
+  receivables: "overdue",
+  cash: "cash",
+  gst: "gst",
+  mis: "cash",
+  margin: "margin",
+  payables: "overdue",
+};
 
 export default function Welcome() {
+  const { state } = useOnboarding();
   const { width } = useWindowDimensions();
   const compact = width < 640;
   const heroSize = compact ? 30 : width < 880 ? 40 : 48;
+
+  const name = nameFromEmail(state.email);
+
+  const intentKeys = state.intents
+    .map((i) => INTENT_TO_ANSWER[i])
+    .filter((k): k is AnswerKey => !!k);
+  const answered: AnswerKey[] = [];
+  for (const k of intentKeys) if (!answered.includes(k)) answered.push(k);
+  const final = answered.length >= 1 ? answered.slice(0, 3) : FALLBACK_KEYS;
+  while (final.length < 3) {
+    for (const f of FALLBACK_KEYS) {
+      if (!final.includes(f)) {
+        final.push(f);
+        if (final.length === 3) break;
+      }
+    }
+  }
 
   return (
     <View className="flex-1 bg-surface">
@@ -19,9 +48,11 @@ export default function Welcome() {
         rightSlot={
           <View className="flex-row items-center gap-2">
             <View className="w-9 h-9 rounded-full bg-brand-tint items-center justify-center">
-              <Text className="text-xs font-semibold text-ink-tertiary">HS</Text>
+              <Text className="text-xs font-semibold text-ink-tertiary">
+                {name.slice(0, 2).toUpperCase()}
+              </Text>
             </View>
-            {!compact && <Text className="text-sm text-slate-700 font-medium">Harsh</Text>}
+            {!compact && <Text className="text-sm text-slate-700 font-medium">{name}</Text>}
           </View>
         }
       />
@@ -38,7 +69,7 @@ export default function Welcome() {
             className="font-semibold text-ink mb-3"
             style={{ fontSize: heroSize, lineHeight: heroSize * 1.15, letterSpacing: -0.5 }}
           >
-            Welcome to Riko, Harsh.
+            Welcome to Riko, {name}.
           </Text>
           <Text className="text-slate-600 mb-8" style={{ fontSize: 17, lineHeight: 26, maxWidth: 580 }}>
             Your Tally just synced. 3 companies, 14,237 invoices, 4.2 years of history. Ask anything.
@@ -89,7 +120,7 @@ export default function Welcome() {
           </Text>
 
           <View className="gap-4">
-            {FIRST_THREE.map((key) => {
+            {final.map((key) => {
               const a = ANSWERS[key];
               return (
                 <View

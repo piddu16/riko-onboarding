@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
 import { router } from "expo-router";
 import { ArrowRight } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { ProgressDots, makeSteps } from "@/components/progress-dots";
+import { useOnboarding } from "@/lib/onboarding-store";
 
 const INDUSTRIES = [
   "Manufacturing",
@@ -19,13 +19,12 @@ const INDUSTRIES = [
 const SIZES = ["< ₹1 Cr", "₹1–10 Cr", "₹10–100 Cr", "₹100 Cr+"];
 
 export default function BusinessScreen() {
-  const [industry, setIndustry] = useState<string | null>(null);
-  const [size, setSize] = useState<string | null>(null);
+  const { state, update } = useOnboarding();
   const { width } = useWindowDimensions();
   const compact = width < 640;
 
   const steps = makeSteps("Tell us about you");
-  const canContinue = !!industry && !!size;
+  const canContinue = !!state.industry && !!state.size;
 
   return (
     <View className="flex-1 bg-surface">
@@ -49,11 +48,11 @@ export default function BusinessScreen() {
           </Text>
           <View className="flex-row flex-wrap gap-2 mb-8">
             {INDUSTRIES.map((item) => {
-              const active = industry === item;
+              const active = state.industry === item;
               return (
                 <Pressable
                   key={item}
-                  onPress={() => setIndustry(item)}
+                  onPress={() => update({ industry: item })}
                   className={`rounded-full px-4 py-2.5 border ${
                     active ? "border-brand bg-brand-tint" : "border-slate-200 bg-surface"
                   }`}
@@ -71,11 +70,11 @@ export default function BusinessScreen() {
           </Text>
           <View className="flex-row flex-wrap gap-2">
             {SIZES.map((item) => {
-              const active = size === item;
+              const active = state.size === item;
               return (
                 <Pressable
                   key={item}
-                  onPress={() => setSize(item)}
+                  onPress={() => update({ size: item })}
                   className={`flex-1 min-w-[120px] rounded-xl border py-3.5 items-center ${
                     active ? "border-brand bg-brand-tint" : "border-slate-200 bg-surface"
                   }`}
@@ -93,7 +92,7 @@ export default function BusinessScreen() {
 
           <View className="mt-10 items-start">
             <Pressable
-              onPress={() => router.push("/onboarding/outcome")}
+              onPress={() => router.push("/onboarding/stat")}
               disabled={!canContinue}
               className={`flex-row items-center gap-2 rounded-full px-6 py-3.5 ${
                 canContinue ? "bg-ink" : "bg-slate-200"
