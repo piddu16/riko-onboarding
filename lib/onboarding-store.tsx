@@ -2,13 +2,42 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type Role = "founder" | "accountant" | "ca";
 export type Intent = "receivables" | "cash" | "gst" | "mis" | "margin" | "payables";
+export type AccountantIntent =
+  | "reconciliation"
+  | "chasing"
+  | "monthend"
+  | "gst_prep"
+  | "mis_requests"
+  | "invoice_entry";
+export type CaIntent =
+  | "client_chase"
+  | "gst_across"
+  | "mis_lender"
+  | "multi_recon"
+  | "client_staff"
+  | "scale";
 export type Commitment = "extremely" | "very" | "somewhat" | "exploring";
+
+export type FirstClient = { name: string; email: string };
 
 export type OnboardingState = {
   role: Role | null;
+  // Founder
   intents: Intent[];
   industry: string | null;
   size: string | null;
+  // Accountant
+  inviteStatus: "yes" | "no" | null;
+  inviteCode: string | null;
+  accountantScope: string | null;
+  accountantEmployer: "in_house" | "external" | null;
+  accountantIntents: AccountantIntent[];
+  // CA
+  caClients: string | null;
+  caPractice: string | null;
+  caIntents: CaIntent[];
+  firstClient: FirstClient | null;
+  // Shared
   commitment: Commitment | null;
   email: string | null;
 };
@@ -18,6 +47,15 @@ const DEFAULT: OnboardingState = {
   intents: [],
   industry: null,
   size: null,
+  inviteStatus: null,
+  inviteCode: null,
+  accountantScope: null,
+  accountantEmployer: null,
+  accountantIntents: [],
+  caClients: null,
+  caPractice: null,
+  caIntents: [],
+  firstClient: null,
   commitment: null,
   email: null,
 };
@@ -49,6 +87,14 @@ export function useOnboarding() {
 }
 
 export function topIntent(intents: Intent[]): Intent | null {
+  return intents[0] ?? null;
+}
+
+export function topAccountantIntent(intents: AccountantIntent[]): AccountantIntent | null {
+  return intents[0] ?? null;
+}
+
+export function topCaIntent(intents: CaIntent[]): CaIntent | null {
   return intents[0] ?? null;
 }
 

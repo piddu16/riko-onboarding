@@ -1,19 +1,25 @@
 import { Text, useWindowDimensions, View } from "react-native";
+import type { Role } from "@/lib/onboarding-store";
 
 export type OnboardingStep = { label: string; status: "done" | "active" | "pending" };
 
-export const DEFAULT_STEPS: OnboardingStep[] = [
-  { label: "Tell us about you", status: "pending" },
-  { label: "Sign up", status: "pending" },
-  { label: "Connect Tally", status: "pending" },
-  { label: "See your numbers", status: "pending" },
-];
+function labelsForRole(role?: Role | null): [string, string, string, string] {
+  if (role === "ca") {
+    return ["Tell us about you", "Sign up", "Invite first client", "Your clients"];
+  }
+  return ["Tell us about you", "Sign up", "Connect Tally", "See your numbers"];
+}
 
-export function makeSteps(activeLabel: string, doneLabels: string[] = []): OnboardingStep[] {
-  return DEFAULT_STEPS.map((s) => {
-    if (doneLabels.includes(s.label)) return { ...s, status: "done" };
-    if (s.label === activeLabel) return { ...s, status: "active" };
-    return { ...s, status: "pending" };
+export function makeSteps(
+  activeLabel: string,
+  doneLabels: string[] = [],
+  role?: Role | null,
+): OnboardingStep[] {
+  const labels = labelsForRole(role);
+  return labels.map((label) => {
+    if (doneLabels.includes(label)) return { label, status: "done" };
+    if (label === activeLabel) return { label, status: "active" };
+    return { label, status: "pending" };
   });
 }
 

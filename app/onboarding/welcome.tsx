@@ -1,5 +1,5 @@
 import { Pressable, ScrollView, Text, useWindowDimensions, View } from "react-native";
-import { ArrowRight } from "lucide-react-native";
+import { ArrowRight, Clock, Users } from "lucide-react-native";
 import { Nav } from "@/components/nav";
 import { ANSWERS, type AnswerKey } from "@/lib/answers";
 import { useOnboarding, nameFromEmail } from "@/lib/onboarding-store";
@@ -9,7 +9,6 @@ const FALLBACK_KEYS: AnswerKey[] = ["overdue", "cash", "gst"];
 const FOUNDER_NOTE =
   "Hi, I'm Harsh. I co-founded Riko because I was tired of asking my CA “what's my cash” three times a week. This is the moment we built it for. Reply here if anything looks wrong — I read every one.";
 
-// Map the 6 onboarding intents to the 4 landing-demo answer keys we actually have preseeded.
 const INTENT_TO_ANSWER: Record<string, AnswerKey> = {
   receivables: "overdue",
   cash: "cash",
@@ -24,23 +23,7 @@ export default function Welcome() {
   const { width } = useWindowDimensions();
   const compact = width < 640;
   const heroSize = compact ? 30 : width < 880 ? 40 : 48;
-
   const name = nameFromEmail(state.email);
-
-  const intentKeys = state.intents
-    .map((i) => INTENT_TO_ANSWER[i])
-    .filter((k): k is AnswerKey => !!k);
-  const answered: AnswerKey[] = [];
-  for (const k of intentKeys) if (!answered.includes(k)) answered.push(k);
-  const final = answered.length >= 1 ? answered.slice(0, 3) : FALLBACK_KEYS;
-  while (final.length < 3) {
-    for (const f of FALLBACK_KEYS) {
-      if (!final.includes(f)) {
-        final.push(f);
-        if (final.length === 3) break;
-      }
-    }
-  }
 
   return (
     <View className="flex-1 bg-surface">
@@ -58,128 +41,225 @@ export default function Welcome() {
       />
       <ScrollView contentContainerClassName="pb-16">
         <View className="w-full self-center px-5" style={{ maxWidth: 760, paddingTop: compact ? 24 : 56 }}>
-          <View className="self-start flex-row items-center gap-2 bg-brand-tint px-3 py-1.5 rounded-full mb-4">
-            <View className="w-2 h-2 rounded-full bg-brand" />
-            <Text className="font-semibold text-xs uppercase text-ink-tertiary" style={{ letterSpacing: 2 }}>
-              Your real data is live
-            </Text>
-          </View>
-
-          <Text
-            className="font-semibold text-ink mb-3"
-            style={{ fontSize: heroSize, lineHeight: heroSize * 1.15, letterSpacing: -0.5 }}
-          >
-            Welcome to Riko, {name}.
-          </Text>
-          <Text className="text-slate-600 mb-8" style={{ fontSize: 17, lineHeight: 26, maxWidth: 580 }}>
-            Your Tally just synced. 3 companies, 14,237 invoices, 4.2 years of history. Ask anything.
-          </Text>
-
-          <View
-            className="bg-brand-tint rounded-2xl border border-brand/20 p-5 mb-10"
-            style={{
-              shadowColor: "#10B981",
-              shadowOffset: { width: 0, height: 20 },
-              shadowOpacity: 0.1,
-              shadowRadius: 30,
-              elevation: 4,
-            }}
-          >
-            <View className="flex-row items-start gap-4">
-              <View
-                className="w-12 h-12 rounded-full bg-brand items-center justify-center"
-                style={{ flexShrink: 0 }}
-              >
-                <Text className="text-white font-semibold text-base">HM</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-[11px] font-semibold uppercase text-ink-tertiary mb-2" style={{ letterSpacing: 1.5 }}>
-                  A note from the founder
-                </Text>
-                <Text className="text-base text-ink mb-3" style={{ lineHeight: 25 }}>
-                  {FOUNDER_NOTE}
-                </Text>
-                <Text
-                  className="text-base text-ink"
-                  style={{ fontFamily: "Inter_600SemiBold", letterSpacing: 0.5 }}
-                >
-                  — Harsh, Co-founder
-                </Text>
-                <Text className="text-xs text-slate-500 mt-1">
-                  reply@rikoai.in · reads every message
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <Text className="font-semibold text-ink mb-1" style={{ fontSize: 22, letterSpacing: -0.3 }}>
-            Your first three answers — now on real data.
-          </Text>
-          <Text className="text-slate-600 mb-5" style={{ fontSize: 15, lineHeight: 23 }}>
-            We ran these the moment your sync completed. Everything below is your actual books.
-          </Text>
-
-          <View className="gap-4">
-            {final.map((key) => {
-              const a = ANSWERS[key];
-              return (
-                <View
-                  key={a.key}
-                  className="bg-surface border border-slate-200 rounded-2xl p-5"
-                  style={{
-                    shadowColor: "#0B1F12",
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.03,
-                    shadowRadius: 3,
-                    elevation: 1,
-                  }}
-                >
-                  <View className="flex-row items-center gap-2 mb-3">
-                    <View className="w-2 h-2 rounded-full bg-brand" />
-                    <Text className="text-xs font-semibold uppercase text-ink-tertiary" style={{ letterSpacing: 1.5 }}>
-                      From your Tally · live
-                    </Text>
-                  </View>
-                  <Text className="text-base font-semibold text-ink mb-2" style={{ lineHeight: 22 }}>
-                    {a.question}
-                  </Text>
-                  <Text className="text-sm text-slate-700 mb-3" style={{ lineHeight: 22 }}>
-                    {a.lead}
-                  </Text>
-                  <View className="bg-slate-50 rounded-xl px-4 py-2">
-                    {a.rows.map((r, i) => (
-                      <View
-                        key={i}
-                        className={`flex-row justify-between py-2.5 ${
-                          i < a.rows.length - 1 ? "border-b border-slate-200" : ""
-                        }`}
-                      >
-                        <Text className="text-sm text-slate-700">{r.label}</Text>
-                        <Text className="text-sm font-semibold text-ink" style={{ fontVariant: ["tabular-nums"] }}>
-                          {r.value}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
-                  <Text className="text-sm font-medium text-ink-tertiary mt-3" style={{ lineHeight: 21 }}>
-                    {a.followup}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-
-          <View className="items-center mt-10">
-            <Pressable className="flex-row items-center gap-2 bg-ink rounded-full px-6 py-3.5">
-              <Text className="text-sm font-semibold text-white">Go to my dashboard</Text>
-              <ArrowRight size={16} color="#ffffff" strokeWidth={2.25} />
-            </Pressable>
-            <Text className="text-xs text-slate-500 mt-3 text-center" style={{ maxWidth: 420 }}>
-              Your Riko learns from every question. Ask five in the next 24 hours — that's how it gets useful.
-            </Text>
-          </View>
+          {state.role === "ca" ? (
+            <CaWelcome name={name} heroSize={heroSize} />
+          ) : (
+            <FounderAccountantWelcome name={name} heroSize={heroSize} />
+          )}
         </View>
       </ScrollView>
+    </View>
+  );
+}
+
+function FounderAccountantWelcome({ name, heroSize }: { name: string; heroSize: number }) {
+  const { state } = useOnboarding();
+  const intentKeys = state.intents
+    .map((i) => INTENT_TO_ANSWER[i])
+    .filter((k): k is AnswerKey => !!k);
+  const answered: AnswerKey[] = [];
+  for (const k of intentKeys) if (!answered.includes(k)) answered.push(k);
+  const final = answered.length >= 1 ? answered.slice(0, 3) : FALLBACK_KEYS;
+  while (final.length < 3) {
+    for (const f of FALLBACK_KEYS) {
+      if (!final.includes(f)) {
+        final.push(f);
+        if (final.length === 3) break;
+      }
+    }
+  }
+
+  return (
+    <>
+      <View className="self-start flex-row items-center gap-2 bg-brand-tint px-3 py-1.5 rounded-full mb-4">
+        <View className="w-2 h-2 rounded-full bg-brand" />
+        <Text className="font-semibold text-xs uppercase text-ink-tertiary" style={{ letterSpacing: 2 }}>
+          Your real data is live
+        </Text>
+      </View>
+
+      <Text
+        className="font-semibold text-ink mb-3"
+        style={{ fontSize: heroSize, lineHeight: heroSize * 1.15, letterSpacing: -0.5 }}
+      >
+        Welcome to Riko, {name}.
+      </Text>
+      <Text className="text-slate-600 mb-8" style={{ fontSize: 17, lineHeight: 26, maxWidth: 580 }}>
+        Your Tally just synced. 3 companies, 14,237 invoices, 4.2 years of history. Ask anything.
+      </Text>
+
+      <FounderCard />
+
+      <Text className="font-semibold text-ink mb-1" style={{ fontSize: 22, letterSpacing: -0.3 }}>
+        Your first three answers — now on real data.
+      </Text>
+      <Text className="text-slate-600 mb-5" style={{ fontSize: 15, lineHeight: 23 }}>
+        We ran these the moment your sync completed. Everything below is your actual books.
+      </Text>
+
+      <View className="gap-4">
+        {final.map((key) => {
+          const a = ANSWERS[key];
+          return (
+            <View
+              key={a.key}
+              className="bg-surface border border-slate-200 rounded-2xl p-5"
+              style={{
+                shadowColor: "#0B1F12",
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.03,
+                shadowRadius: 3,
+                elevation: 1,
+              }}
+            >
+              <View className="flex-row items-center gap-2 mb-3">
+                <View className="w-2 h-2 rounded-full bg-brand" />
+                <Text className="text-xs font-semibold uppercase text-ink-tertiary" style={{ letterSpacing: 1.5 }}>
+                  From your Tally · live
+                </Text>
+              </View>
+              <Text className="text-base font-semibold text-ink mb-2" style={{ lineHeight: 22 }}>
+                {a.question}
+              </Text>
+              <Text className="text-sm text-slate-700 mb-3" style={{ lineHeight: 22 }}>
+                {a.lead}
+              </Text>
+              <View className="bg-slate-50 rounded-xl px-4 py-2">
+                {a.rows.map((r, i) => (
+                  <View
+                    key={i}
+                    className={`flex-row justify-between py-2.5 ${
+                      i < a.rows.length - 1 ? "border-b border-slate-200" : ""
+                    }`}
+                  >
+                    <Text className="text-sm text-slate-700">{r.label}</Text>
+                    <Text className="text-sm font-semibold text-ink" style={{ fontVariant: ["tabular-nums"] }}>
+                      {r.value}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              <Text className="text-sm font-medium text-ink-tertiary mt-3" style={{ lineHeight: 21 }}>
+                {a.followup}
+              </Text>
+            </View>
+          );
+        })}
+      </View>
+
+      <View className="items-center mt-10">
+        <Pressable className="flex-row items-center gap-2 bg-ink rounded-full px-6 py-3.5">
+          <Text className="text-sm font-semibold text-white">Go to my dashboard</Text>
+          <ArrowRight size={16} color="#ffffff" strokeWidth={2.25} />
+        </Pressable>
+        <Text className="text-xs text-slate-500 mt-3 text-center" style={{ maxWidth: 420 }}>
+          Your Riko learns from every question. Ask five in the next 24 hours — that's how it gets useful.
+        </Text>
+      </View>
+    </>
+  );
+}
+
+function CaWelcome({ name, heroSize }: { name: string; heroSize: number }) {
+  const { state } = useOnboarding();
+  const clientName = state.firstClient?.name ?? "Your first client";
+  const clientEmail = state.firstClient?.email ?? "not invited yet";
+
+  return (
+    <>
+      <View className="self-start flex-row items-center gap-2 bg-brand-tint px-3 py-1.5 rounded-full mb-4">
+        <View className="w-2 h-2 rounded-full bg-brand" />
+        <Text className="font-semibold text-xs uppercase text-ink-tertiary" style={{ letterSpacing: 2 }}>
+          Your practice is live on Riko
+        </Text>
+      </View>
+
+      <Text
+        className="font-semibold text-ink mb-3"
+        style={{ fontSize: heroSize, lineHeight: heroSize * 1.15, letterSpacing: -0.5 }}
+      >
+        Welcome to Riko, {name}.
+      </Text>
+      <Text className="text-slate-600 mb-8" style={{ fontSize: 17, lineHeight: 26, maxWidth: 580 }}>
+        You're set up. Your first client invite is on its way. The moment they pair Tally, their books land in your roster.
+      </Text>
+
+      <FounderCard />
+
+      <Text className="font-semibold text-ink mb-1" style={{ fontSize: 22, letterSpacing: -0.3 }}>
+        Your client roster
+      </Text>
+      <Text className="text-slate-600 mb-5" style={{ fontSize: 15, lineHeight: 23 }}>
+        Add clients anytime — Riko pings them on email, follows up until they pair, and tells you the moment books land.
+      </Text>
+
+      <View className="bg-surface border border-slate-200 rounded-2xl p-5 mb-4">
+        <View className="flex-row items-start gap-4">
+          <View className="w-11 h-11 rounded-full bg-brand-tint items-center justify-center">
+            <Text className="text-sm font-semibold text-ink-tertiary">
+              {clientName.slice(0, 2).toUpperCase()}
+            </Text>
+          </View>
+          <View className="flex-1">
+            <Text className="text-base font-semibold text-ink">{clientName}</Text>
+            <Text className="text-sm text-slate-600" style={{ lineHeight: 20 }}>
+              {clientEmail}
+            </Text>
+            <View className="flex-row items-center gap-1.5 mt-2">
+              <Clock size={12} color="#BA7517" strokeWidth={2.25} />
+              <Text className="text-xs font-medium text-amber-700">Waiting for Tally setup</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <Pressable className="flex-row items-center justify-center gap-2 border-2 border-dashed border-slate-300 rounded-2xl py-5 bg-slate-50">
+        <Users size={16} color="#64748B" strokeWidth={2} />
+        <Text className="text-sm font-medium text-slate-600">Add another client</Text>
+      </Pressable>
+
+      <View className="items-center mt-10">
+        <Pressable className="flex-row items-center gap-2 bg-ink rounded-full px-6 py-3.5">
+          <Text className="text-sm font-semibold text-white">Go to my roster</Text>
+          <ArrowRight size={16} color="#ffffff" strokeWidth={2.25} />
+        </Pressable>
+        <Text className="text-xs text-slate-500 mt-3 text-center" style={{ maxWidth: 460 }}>
+          Riko auto-detects new client connections. We'll email you the minute {clientName.split(" ")[0]}'s books come live.
+        </Text>
+      </View>
+    </>
+  );
+}
+
+function FounderCard() {
+  return (
+    <View
+      className="bg-brand-tint rounded-2xl border border-brand/20 p-5 mb-10"
+      style={{
+        shadowColor: "#10B981",
+        shadowOffset: { width: 0, height: 20 },
+        shadowOpacity: 0.1,
+        shadowRadius: 30,
+        elevation: 4,
+      }}
+    >
+      <View className="flex-row items-start gap-4">
+        <View className="w-12 h-12 rounded-full bg-brand items-center justify-center" style={{ flexShrink: 0 }}>
+          <Text className="text-white font-semibold text-base">HM</Text>
+        </View>
+        <View className="flex-1">
+          <Text className="text-[11px] font-semibold uppercase text-ink-tertiary mb-2" style={{ letterSpacing: 1.5 }}>
+            A note from the founder
+          </Text>
+          <Text className="text-base text-ink mb-3" style={{ lineHeight: 25 }}>
+            {FOUNDER_NOTE}
+          </Text>
+          <Text className="text-base text-ink" style={{ fontFamily: "Inter_600SemiBold", letterSpacing: 0.5 }}>
+            — Harsh, Co-founder
+          </Text>
+          <Text className="text-xs text-slate-500 mt-1">reply@rikoai.in · reads every message</Text>
+        </View>
+      </View>
     </View>
   );
 }

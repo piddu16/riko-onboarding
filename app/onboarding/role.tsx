@@ -36,12 +36,14 @@ export default function RoleScreen() {
   const { width } = useWindowDimensions();
   const compact = width < 640;
 
-  const steps = makeSteps("Tell us about you");
   const selected = state.role;
+  const steps = makeSteps("Tell us about you", [], selected);
 
   function onContinue() {
     if (!selected) return;
-    router.push("/onboarding/intents");
+    if (selected === "founder") router.push("/onboarding/intents");
+    else if (selected === "accountant") router.push("/onboarding/accountant-gate");
+    else if (selected === "ca") router.push("/onboarding/ca-clients");
   }
 
   return (

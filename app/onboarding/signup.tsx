@@ -28,15 +28,21 @@ export default function SignupScreen() {
   const { width } = useWindowDimensions();
   const compact = width < 640;
 
-  const steps = makeSteps("Sign up", ["Tell us about you"]);
+  const steps = makeSteps("Sign up", ["Tell us about you"], state.role);
   const valid = isValidEmail(email);
 
   function send() {
     if (!valid) return;
     update({ email: email.trim() });
     setSent(true);
-    setTimeout(() => router.push("/onboarding/connect-tally"), 900);
+    const nextRoute = state.role === "ca" ? "/onboarding/ca-invite" : "/onboarding/connect-tally";
+    setTimeout(() => router.push(nextRoute), 900);
   }
+
+  const subhead =
+    state.role === "ca"
+      ? "We'll email your magic link. After login, you'll add your first client."
+      : "We'll email you a magic link. No password to remember — just click from your inbox.";
 
   return (
     <View className="flex-1 bg-surface">
@@ -53,7 +59,7 @@ export default function SignupScreen() {
               Where should we send your Riko?
             </Text>
             <Text className="text-slate-600 mb-7" style={{ fontSize: 17, lineHeight: 26 }}>
-              We'll email you a magic link. No password to remember — just click from your inbox.
+              {subhead}
             </Text>
 
             <View className="relative">
@@ -63,7 +69,7 @@ export default function SignupScreen() {
               <TextInput
                 value={email}
                 onChangeText={setEmail}
-                placeholder="you@patel-textiles.in"
+                placeholder={state.role === "ca" ? "you@yourfirm.in" : "you@patel-textiles.in"}
                 placeholderTextColor="#94A3B8"
                 keyboardType="email-address"
                 autoCapitalize="none"
